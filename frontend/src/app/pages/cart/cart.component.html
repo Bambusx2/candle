@@ -1,0 +1,218 @@
+<div class="cart-page">
+  <div class="container">
+    <div class="page-header" role="heading" aria-level="1">
+      <h1>Your Shopping Cart</h1>
+      <p>Review your items and proceed to checkout</p>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-spinner" aria-live="polite" aria-busy="true">
+      <div class="spinner" aria-label="Loading your cart items"></div>
+    </div>
+
+    <!-- Empty cart state -->
+    <div *ngIf="!isLoading && cartItems.length === 0" class="empty-cart" aria-live="polite">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added any candles to your cart yet.</p>
+      <a routerLink="/products" class="btn">Shop Our Collection</a>
+    </div>
+
+    <!-- Cart with items -->
+    <div *ngIf="!isLoading && cartItems.length > 0" class="cart-content" aria-live="polite">
+      <div class="cart-items-container">
+        <div class="cart-header">
+          <div class="header-product">Product</div>
+          <div class="header-price">Price</div>
+          <div class="header-quantity">Quantity</div>
+          <div class="header-total">Total</div>
+          <div class="header-actions" aria-hidden="true"></div>
+        </div>
+
+        <div class="cart-items">
+          <!-- Sync notification removed as requested -->
+          <!-- <div *ngIf="!isLoggedIn && cartItems.length > 0" class="sync-notification">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2v6h-6"></path>
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+              <path d="M3 22v-6h6"></path>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+            </svg>
+            <span>Want to access your cart on all your devices? <a routerLink="/login" class="login-link">Sign in</a> to sync your cart.</span>
+          </div> -->
+
+          <div class="cart-item" *ngFor="let item of cartItems; let i = index" [attr.data-index]="i">
+            <div class="item-product">
+              <div class="product-image">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name">
+              </div>
+              <div class="product-info">
+                <h3>{{ item.product.name }}</h3>
+                <p class="product-scent">{{ item.product.scent }}</p>
+                <p class="product-size">{{ item.product.size }} ({{ item.product.burnTime }})</p>
+              </div>
+            </div>
+            <div class="item-price">${{ item.product.price.toFixed(2) }}</div>
+            <div class="item-quantity">
+              <select 
+                [ngModel]="item.quantity" 
+                (ngModelChange)="updateQuantity(item, $event)"
+                [attr.aria-label]="'Change quantity for ' + item.product.name">
+                <option *ngFor="let quantity of quantityOptions" [value]="quantity">{{ quantity }}</option>
+                <option [value]="0">Remove</option>
+              </select>
+            </div>
+            <div class="item-total">${{ (item.product.price * item.quantity).toFixed(2) }}</div>
+            <div class="item-actions">
+              <button 
+                class="remove-btn" 
+                (click)="removeFromCart(item)" 
+                title="Remove item"
+                [attr.aria-label]="'Remove ' + item.product.name + ' from cart'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-footer">
+          <button class="clear-cart" (click)="clearCart()" [disabled]="cartItems.length === 0">Clear Cart</button>
+          <a routerLink="/products" class="continue-shopping">Continue Shopping</a>
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>${{ subtotal.toFixed(2) }}</span>
+        </div>
+        
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span *ngIf="shipping > 0">${{ shipping.toFixed(2) }}</span>
+          <span *ngIf="shipping === 0" class="free-shipping">FREE</span>
+        </div>
+        
+        <div class="summary-row">
+          <span>Tax</span>
+          <span>${{ tax.toFixed(2) }}</span>
+        </div>
+        
+        <div *ngIf="promoApplied" class="summary-row discount">
+          <span>Discount</span>
+          <span>-${{ promoDiscount.toFixed(2) }}</span>
+        </div>
+        
+        <div class="summary-total">
+          <span>Total</span>
+          <span>${{ (promoApplied ? total - promoDiscount : total).toFixed(2) }}</span>
+        </div>
+        
+        <div class="promo-code">
+          <label for="promo">Promo Code</label>
+          <div class="promo-input">
+            <input 
+              type="text" 
+              id="promo" 
+              [(ngModel)]="promoCode" 
+              placeholder="Enter promo code"
+              [disabled]="promoApplied"
+              aria-describedby="promo-hint promo-error"
+            >
+            <button 
+              (click)="applyPromoCode()" 
+              [disabled]="promoApplied || !promoCode.trim()"
+              [class.applied]="promoApplied"
+              aria-label="Apply promo code"
+            >
+              {{ promoApplied ? 'Applied' : 'Apply' }}
+            </button>
+          </div>
+          <div *ngIf="promoError" id="promo-error" class="promo-error" aria-live="assertive">{{ promoError }}</div>
+          <div *ngIf="promoApplied" class="promo-success" aria-live="assertive">Promo code applied successfully!</div>
+          <div id="promo-hint" class="promo-hint">(Use "WELCOME10" for 10% off)</div>
+        </div>
+        
+        <div class="shipping-notification" *ngIf="shipping > 0" role="alert">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>Add ${{ (freeShippingThreshold - subtotal).toFixed(2) }} more for FREE shipping</span>
+        </div>
+        
+        <ng-container *ngIf="isLoggedIn; else loginToCheckout">
+          <button class="btn checkout-btn" [disabled]="isCheckoutDisabled" (click)="checkout()" aria-label="Proceed to checkout">
+            Proceed to Checkout
+          </button>
+        </ng-container>
+        
+        <ng-template #loginToCheckout>
+          <button class="btn login-btn" (click)="router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } })" aria-label="Sign in to checkout">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Sign in to Checkout
+          </button>
+          
+          <div class="checkout-login-notice">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Sign in to save your shipping information for faster checkout.</span>
+          </div>
+        </ng-template>
+        
+        <div class="secure-checkout">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Secure Checkout</span>
+        </div>
+        
+        <div class="payment-methods" aria-label="Accepted payment methods">
+          <div class="payment-icon visa">
+            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+              <path fill="#1565C0" d="M937.5,729.2c0,46-37.3,83.3-83.3,83.3H145.8c-46,0-83.3-37.3-83.3-83.3V270.8c0-46,37.3-83.3,83.3-83.3h708.3c46,0,83.3,37.3,83.3,83.3V729.2z"></path>
+              <path fill="#FFF" d="M316.4,395.8l-54.7,163.2c0,0-13.9-69-15.3-77.7c-31.1-71.1-77.1-67.1-77.1-67.1l46.7,210.4h65.8l84.5-228.8H316.4zM368.5,625l59.8-229.2h62.9l-60,229.2H368.5zM603.9,395.8h62.9l-60,229.2h-62.9L603.9,395.8zM458.8,395.8h47.3c33,2.7,54,28.3,48.7,54.4c-6.7,28.4-35.5,35.9-65.4,35c-15.6,0-15.6,0-15.6,0l20.9-79.8h-15L458.8,395.8zM513.9,541.7l27.4,83.3h45.7l-83.2-229.2h-57c-65.9,0-76.2,57.8-76.2,57.8c-17.2,44.2-20.7,96.6-15.9,125.3c9.5,42.4,44.6,46.1,44.6,46.1s38.5,6.9,76.3,0L513.9,541.7z"></path>
+            </svg>
+          </div>
+          <div class="payment-icon mastercard">
+            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+              <path fill="#3F51B5" d="M937.5,729.2c0,46-37.3,83.3-83.3,83.3H145.8c-46,0-83.3-37.3-83.3-83.3V270.8c0-46,37.3-83.3,83.3-83.3h708.3c46,0,83.3,37.3,83.3,83.3V729.2z"></path>
+              <path fill="#FFC107" d="M625,500c0,69-56,125-125,125s-125-56-125-125s56-125,125-125S625,431,625,500z"></path>
+              <path fill="#FF3D00" d="M468.8,500c0-37.4,18.5-70.7,47.2-90.6c-51.2-35.8-121.8-23.3-157.6,27.9S335.1,559.1,386.3,595c22.1,15.4,48.6,21.8,74.9,17.8l11-1.9c-28.5-19.9-47-53.1-47-90.5L468.8,500z"></path>
+              <path fill="#F44336" d="M697.5,442.4c-35.8-51.2-106.4-63.7-157.6-27.9c-9,6.3-17,13.7-24,22l-11.6,21.4c28.5,19.9,47,53.1,47,90.5l-20.7-6.8c0,37.4-18.5,70.6-47,90.5l11.1,1.9c46.8,7.9,91.8-20.7,107.3-65h53.2l3.5-0.2C673.6,548.1,683.5,506.1,697.5,442.4z"></path>
+              <path fill="#FFF" d="M500,360c-0.7,0-1.4,0-2.1,0V360c-68.9,1.3-123.5,56.9-123.5,126s54.6,124.8,123.5,126v0c0.7,0,1.4,0,2.1,0s1.4,0,2.1,0v0c68.9-1.3,123.5-56.9,123.5-126s-54.6-124.8-123.5-126V360C501.4,360,500.7,360,500,360z M500,604.4c-0.7,0-1.4,0-2.1,0V407.7c0.7,0,1.4,0,2.1,0c54.9,0,99.4,44.5,99.4,99.4S554.9,604.4,500,604.4z M497.9,604.4V407.7c-0.7,0-1.4,0-2.1,0c-54.9,0-99.4,44.5-99.4,99.4s44.5,99.4,99.4,99.4C496.6,604.4,497.3,604.4,497.9,604.4z"></path>
+            </svg>
+          </div>
+          <div class="payment-icon amex">
+            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+              <path fill="#1976D2" d="M937.5,729.2c0,46-37.3,83.3-83.3,83.3H145.8c-46,0-83.3-37.3-83.3-83.3V270.8c0-46,37.3-83.3,83.3-83.3h708.3c46,0,83.3,37.3,83.3,83.3V729.2z"></path>
+              <path fill="#FFF" d="M463.6,422.6h-70L312.5,603.7h69.4l12.4-31.8h29.3l10.4,31.8h78.1L463.6,422.6z M403.9,534.2l16.8-43.6l16.1,43.6H403.9z M533.4,603.7h69.4V422.5h-69.4V603.7z M887,422.6H765.5v181.1h70.1v-63.4h47.6c19.2,0,35.1-17.7,35.1-36.9v-44C918.3,441.5,906.1,422.6,887,422.6z M849.4,494.8V494.8h-13.8v-28.3h13.8c7.7,0,13.9,6.2,13.9,13.9C863.3,488,857.1,494.8,849.4,494.8z M333.5,509.5L333.5,509.5c23.8-12.7,38.1-28.5,38.1-58.7c0-44.4-27.7-67.6-77.2-69.8H186.3v181.1h70.1v-58h6.2l40.9,58h84.9L333.5,509.5z M263.3,479.8V479.8h-6.9v-27.8h6.9c10.6,0,19.1,5,19.1,13.9C282.4,474.2,273.9,479.8,263.3,479.8z M697.9,603.7V422.6l-90.8,94l90.8,87.1z"></path>
+            </svg>
+          </div>
+          <div class="payment-icon paypal">
+            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+              <path fill="#1565C0" d="M937.5,729.2c0,46-37.3,83.3-83.3,83.3H145.8c-46,0-83.3-37.3-83.3-83.3V270.8c0-46,37.3-83.3,83.3-83.3h708.3c46,0,83.3,37.3,83.3,83.3V729.2z"></path>
+              <path fill="#FFF" d="M422.3,515.7c-1.3,16.2-15.6,29.9-30,29.9h-39.5c-2.3,0-4-1.2-4.7-5.3l28.1-178.6c0.8-4.1,3.5-4.6,5.3-4.6h46.9c30.9,0,52.5,14.1,49.4,46.9c-3.1,32.8-29.2,49.5-55.6,49.5h-37v37.2c0.1,4.4-1.7,9-4,12.3l-9.9,12.7zm-8.8-90.8c0,4.7-3.4,8.3-8.8,8.3h-28.1l5.9-37h28.1c5.3,0,8.8,3.6,8.8,8.3v20.4zm323.9-61.9c0.7-2.7,3.5-4.6,5.3-4.6h44.6c2.4,0,4.4,2,4.7,4l19.9,127c0.3,2-2.3,5.8-4.8,5.8h-26c-2.4,0-4.5-2-4.7-4l-5.3-33.8c-0.3-2-2.7-4-4.7-4H714c-2.3,0-4.7,2-5.3,3.6l-17.6,34.2c-0.9,1.8-3.1,4-4.7,4h-28.1c-2.4,0-3.4-2-2.9-3.6l66.7-127c1.1-2,3.3-3.6,5.3-3.6h25.8c2.4,0,4.4,2,4.7,4l11.2,72.1 34-76.1zm-200.7,90.8c-1.3,16.2-15.5,29.9-29.9,29.9h-39.5c-2.3,0-4-1.2-4.7-5.3l28.1-178.6c0.8-4.1,3.5-4.6,5.3-4.6h46.9c30.9,0,52.6,14.1,49.4,46.9c-3.1,32.8-29.2,49.5-55.6,49.5h-36.9l-7.2,32.8c0.3,4.4,3.1,5.3,4.6,5.3h29.9c5.3,0,10-3.5,9.6-8.3v-17.8zm-8.7-90.8c0,4.7-3.4,8.3-8.7,8.3h-28.1l5.9-37h28.1c5.3,0,8.7,3.6,8.7,8.3v20.4zm211.8,11.1c-0.7,16.2-15.5,29.9-29.9,29.9h-44.6l-5.9,37c0,2.4,2.9,5.3,4.6,5.3h29.9c2.7,0,4.9,2,4.8,5.3l-2.4,15c-0.2,3.3-2.7,5.3-4.8,5.3h-39.5c-2.3,0-4-1.2-4.7-5.3l28.1-178.6c0.8-4.1,3.5-4.6,5.3-4.6h58.6c30.9,0,52.4,14.1,49.2,46.9l-14,43.8zm-14-21.8c0,4.7-3.5,8.3-8.8,8.3h-28.1l5.9-37h28.1c5.3,0,8.7,3.6,8.7,8.3l-5.8,20.4zm135.7,59.4h-51.6c-2.1,0-3.6,0.9-4.1,2.3l-12.3,22.8c-0.7,1.3-2.7,2.3-4.1,2.3h-26.7c-1.4,0-1.9-1-1.8-3.3l72.1-127c0.7-1.3,2.7-2.3,4.1-2.3h24c1.4,0,2.6,1,2.9,2.3l27.4,127c0.2,1.3-1.8,3.3-3.2,3.3H585c-2.1,0-3.6-1-4.1-2.3l-7-22.8c-0.2-1.3-1.5-2.3-2.9-2.3h13.6zm2.6-22.1l-12.3-43-18.2,43h30.5zm179.1-65.9c4.7,0,8.2,3.2,7.6,7.2l-3.9,20.4c-0.6,3.9-4.5,7.2-9.3,7.2h-32.2c-4.7,0-7.2,3.2-7.9,7.2l-19.1,121.4c-0.6,3.9-4.6,7.2-9.3,7.2h-28.5c-4.7,0-8.2-3.2-7.6-7.2l19.1-121.4c0.6-3.9,4.5-7.2,9.3-7.2h32.2c4.7,0,7.2-3.2,7.9-7.2l3.9-20.4c0.6-3.9,4.6-7.2,9.3-7.2h28.5z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

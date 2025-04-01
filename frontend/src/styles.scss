@@ -1,0 +1,215 @@
+@use "sass:color";
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Primary Brand Colors */
+  --primary-color: #1a2133; /* Deep navy */
+  --secondary-color: #d6c7a9; /* Cream/gold */
+  --accent-color: #c9a064; /* Rich gold */
+  --accent-color-rgb: 201, 160, 100; /* RGB values for rgba() usage */
+  --highlight-color: #af4450; /* Rich red for cocktail accent */
+  
+  /* UI Colors */
+  --danger-color: #d44646;
+  --success-color: #4a7c59;
+  --background-light: #f9f7f2; /* Soft cream background */
+  --text-color: #333333;
+  --text-color-light: #666666;
+  --border-color: rgba(201, 160, 100, 0.2);
+  
+  /* Layout Variables */
+  --header-height: 70px;
+  --footer-height: 120px;
+  --container-width: 1200px;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --box-shadow: 0 4px 20px rgba(26, 33, 51, 0.08);
+  --transition: all 0.3s ease;
+  
+  /* Hover Colors (pre-calculated) */
+  --accent-color-dark: #b48344; /* Darker version of accent color */
+  --primary-color-dark: #131925; /* Darker version of primary color */
+  --danger-color-dark: #c03a3a; /* Darker version of danger color */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-color);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+h1 {
+  letter-spacing: 1px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+  transition: var(--transition);
+  
+  &:hover {
+    color: var(--accent-color);
+  }
+}
+
+button, .btn {
+  display: inline-block;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  &.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    
+    &:hover {
+      background-color: var(--accent-color);
+      color: white;
+    }
+  }
+  
+  &.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    
+    &:hover {
+      background-color: var(--accent-color);
+      color: white;
+    }
+  }
+  
+  &.btn-danger {
+    background-color: var(--danger-color);
+    
+    &:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+  }
+}
+
+input, textarea, select {
+  display: block;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #fff;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(201, 160, 100, 0.1);
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+}
+
+.card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(201, 160, 100, 0.2);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}

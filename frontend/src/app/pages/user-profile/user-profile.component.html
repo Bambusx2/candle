@@ -1,0 +1,315 @@
+<div class="profile-page">
+  <div class="container">
+    <div class="profile-header">
+      <h1>My Account</h1>
+      <button (click)="logout()" class="btn-logout">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Logout
+      </button>
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading your profile...</p>
+    </div>
+    
+    <!-- Main Content -->
+    <div *ngIf="!isLoading" class="profile-content">
+      <!-- Tabs -->
+      <div class="profile-tabs">
+        <button 
+          [class.active]="activeTab === 'profile'" 
+          (click)="setActiveTab('profile')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Profile Information
+        </button>
+        <button 
+          [class.active]="activeTab === 'orders'" 
+          (click)="setActiveTab('orders')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          Order History
+        </button>
+        <button 
+          [class.active]="activeTab === 'address'" 
+          (click)="setActiveTab('address')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          Shipping Address
+        </button>
+      </div>
+      
+      <!-- Success/Error Messages -->
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      
+      <!-- Profile Tab Content -->
+      <div class="tab-content" *ngIf="activeTab === 'profile'">
+        <h2>Profile Information</h2>
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input 
+                type="text" 
+                id="firstName" 
+                formControlName="firstName" 
+                [ngClass]="{'invalid': profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched}"
+              >
+              <div class="validation-error" *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched">
+                <span *ngIf="profileForm.get('firstName')?.errors?.['required']">First name is required</span>
+                <span *ngIf="profileForm.get('firstName')?.errors?.['minlength']">First name is too short</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input 
+                type="text" 
+                id="lastName" 
+                formControlName="lastName" 
+                [ngClass]="{'invalid': profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched}"
+              >
+              <div class="validation-error" *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched">
+                <span *ngIf="profileForm.get('lastName')?.errors?.['required']">Last name is required</span>
+                <span *ngIf="profileForm.get('lastName')?.errors?.['minlength']">Last name is too short</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" formControlName="email">
+            <div class="help-text">Email cannot be changed. Contact support for assistance.</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number (Optional)</label>
+            <input 
+              type="tel" 
+              id="phoneNumber" 
+              formControlName="phoneNumber" 
+              [ngClass]="{'invalid': profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched}"
+            >
+            <div class="validation-error" *ngIf="profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched">
+              <span *ngIf="profileForm.get('phoneNumber')?.errors?.['pattern']">Please enter a valid phone number</span>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" [disabled]="isSaving || profileForm.invalid">
+            <span *ngIf="!isSaving">Save Changes</span>
+            <span *ngIf="isSaving" class="spinner-small"></span>
+          </button>
+        </form>
+      </div>
+      
+      <!-- Orders Tab Content -->
+      <div class="tab-content" *ngIf="activeTab === 'orders'">
+        <h2>Order History</h2>
+        
+        <!-- Loading state -->
+        <div *ngIf="isLoadingOrders" class="loading-container-small">
+          <div class="loading-spinner"></div>
+          <p>Loading your orders...</p>
+        </div>
+        
+        <!-- Error state -->
+        <div *ngIf="orderError && !isLoadingOrders" class="error-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p>{{ orderError }}</p>
+          <button (click)="loadOrderHistory()" class="btn btn-outline">Retry</button>
+        </div>
+        
+        <!-- No orders state -->
+        <div *ngIf="orderHistory.length === 0 && !isLoadingOrders && !orderError" class="no-orders">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <p>You haven't placed any orders yet.</p>
+          <a routerLink="/products" class="btn">Start Shopping</a>
+        </div>
+        
+        <!-- Orders list -->
+        <div *ngIf="orderHistory.length > 0 && !isLoadingOrders" class="orders-list">
+          <div class="order-item" *ngFor="let order of orderHistory">
+            <div class="order-header">
+              <div class="order-info">
+                <span class="order-id">Order #{{ order.id }}</span>
+                <span class="order-date">{{ order.orderDate | date:'mediumDate' }}</span>
+              </div>
+              <div class="order-status" [ngClass]="getOrderStatusClass(order.status)">
+                {{ order.status }}
+              </div>
+            </div>
+            
+            <div class="order-products">
+              <div class="product-thumbnails">
+                <div class="product-thumbnail" *ngFor="let item of order.items.slice(0, 3)">
+                  <img [src]="item.product.imageUrl" [alt]="item.product.name">
+                  <span class="product-quantity" *ngIf="item.quantity > 1">{{ item.quantity }}</span>
+                </div>
+                <div class="more-products" *ngIf="order.items.length > 3">
+                  +{{ order.items.length - 3 }} more
+                </div>
+              </div>
+            </div>
+            
+            <div class="order-summary">
+              <div class="summary-item">
+                <span>Items</span>
+                <span>{{ order.items.length }}</span>
+              </div>
+              <div class="summary-item">
+                <span>Total</span>
+                <span>${{ order.summary.total.toFixed(2) }}</span>
+              </div>
+            </div>
+            
+            <div class="order-actions">
+              <button class="btn-outline" (click)="viewOrderDetails(order.id + '')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                View Details
+              </button>
+              <button class="btn-secondary" (click)="trackOrder(order.id + '')" *ngIf="order.status === 'Shipped' || order.status === 'Processing'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4l-3 3z"></path>
+                  <path d="M14 9h-6"></path>
+                  <path d="M14 13h-6"></path>
+                  <path d="M9 5h-4"></path>
+                </svg>
+                Track Order
+              </button>
+              <button class="btn-secondary" *ngIf="order.status === 'Delivered'" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Delivered
+              </button>
+              <button class="btn-danger" *ngIf="order.status === 'Pending'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Address Tab Content -->
+      <div class="tab-content" *ngIf="activeTab === 'address'">
+        <h2>Shipping Address</h2>
+        <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" class="address-form">
+          <div class="form-group">
+            <label for="street">Street Address</label>
+            <input 
+              type="text" 
+              id="street" 
+              formControlName="street" 
+              [ngClass]="{'invalid': addressForm.get('street')?.invalid && addressForm.get('street')?.touched}"
+            >
+            <div class="validation-error" *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
+              <span *ngIf="addressForm.get('street')?.errors?.['required']">Street address is required</span>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">City</label>
+              <input 
+                type="text" 
+                id="city" 
+                formControlName="city" 
+                [ngClass]="{'invalid': addressForm.get('city')?.invalid && addressForm.get('city')?.touched}"
+              >
+              <div class="validation-error" *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
+                <span *ngIf="addressForm.get('city')?.errors?.['required']">City is required</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="state">State/Province</label>
+              <input 
+                type="text" 
+                id="state" 
+                formControlName="state" 
+                [ngClass]="{'invalid': addressForm.get('state')?.invalid && addressForm.get('state')?.touched}"
+              >
+              <div class="validation-error" *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
+                <span *ngIf="addressForm.get('state')?.errors?.['required']">State is required</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postalCode">Postal/Zip Code</label>
+              <input 
+                type="text" 
+                id="postalCode" 
+                formControlName="postalCode" 
+                [ngClass]="{'invalid': addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched}"
+              >
+              <div class="validation-error" *ngIf="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched">
+                <span *ngIf="addressForm.get('postalCode')?.errors?.['required']">Postal code is required</span>
+                <span *ngIf="addressForm.get('postalCode')?.errors?.['pattern']">Please enter a valid postal code</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input 
+                type="text" 
+                id="country" 
+                formControlName="country" 
+                [ngClass]="{'invalid': addressForm.get('country')?.invalid && addressForm.get('country')?.touched}"
+              >
+              <div class="validation-error" *ngIf="addressForm.get('country')?.invalid && addressForm.get('country')?.touched">
+                <span *ngIf="addressForm.get('country')?.errors?.['required']">Country is required</span>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" [disabled]="isSaving || addressForm.invalid">
+            <span *ngIf="!isSaving">Save Address</span>
+            <span *ngIf="isSaving" class="spinner-small"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-order-details-modal 
+  *ngIf="showOrderDetails" 
+  [order]="selectedOrder" 
+  (close)="closeOrderDetails()">
+</app-order-details-modal>

@@ -1,0 +1,37 @@
+@use '../login/login.component.scss';
+
+.auth-container {
+  max-width: 550px;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .form-group {
+    flex: 1;
+  }
+}
+
+.agree-terms {
+  margin-top: 0.5rem;
+  
+  a {
+    color: var(--accent-color);
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .validation-error {
+    margin-top: 0.5rem;
+  }
+}
+

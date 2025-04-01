@@ -1,0 +1,352 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="decorative-element"></div>
+    <div class="decorative-element-2"></div>
+    <div class="decorative-element-3"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1>Illuminate Your <span>Space</span></h1>
+        <p>Discover our artisanal hand-poured candles crafted with premium ingredients to create moments of warmth and tranquility in your home.</p>
+        <div class="cta-buttons">
+          <a routerLink="/products" class="btn">Shop All Candles</a>
+          <a routerLink="/products" class="btn btn-secondary">New Arrivals</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="image-container">
+          <img src="assets/images/4.png" alt="Luxury candle collection">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+          </svg>
+        </div>
+        <h3>Handcrafted</h3>
+        <p>Each candle is carefully handmade with love and attention to detail.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12h6"></path>
+            <path d="M12 9v6"></path>
+            <path d="M3.8 9A6 6 0 0 1 12 5c2.4 0 4.8 1.4 6 4.5"></path>
+            <path d="M20.1 15A6 6 0 0 1 12 19c-2.4 0-4.8-1.4-6-4.5"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        </div>
+        <h3>Eco-Friendly</h3>
+        <p>Made from sustainable materials that are better for you and the environment.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+        </div>
+        <h3>Long Lasting</h3>
+        <p>Our candles burn longer, giving you more time to enjoy their beautiful scents.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bestsellers Section -->
+  <section class="bestsellers-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our Bestsellers</h2>
+        <p>Discover our most loved candles and find your perfect match</p>
+      </div>
+      
+      <div *ngIf="isLoading" class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      
+      <div *ngIf="!isLoading && bestSellers.length > 0" class="products-grid">
+        <app-product-card 
+          *ngFor="let product of bestSellers" 
+          [product]="product"
+          (addedToCart)="addToCart(product)">
+        </app-product-card>
+      </div>
+      
+      <!-- No Products Message -->
+      <div *ngIf="!isLoading && bestSellers.length === 0" class="no-products-message">
+        <p>No bestsellers available at this time. Check back soon for our top picks!</p>
+      </div>
+      
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message">
+        <p>{{ error }}</p>
+      </div>
+      
+      <div class="view-all">
+        <a routerLink="/products" class="btn">Shop All Candles</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Collection Section -->
+  <section class="collection-section">
+    <div class="container">
+      <div class="collection-image">
+        <img src="assets/images/1.png" alt="Luxury Candle Collection">
+      </div>
+      <div class="collection-content">
+        <h2>The Luxury Collection</h2>
+        <p>Indulge in our premium range of hand-poured artisan candles, crafted with the finest ingredients and luxurious scents. Each piece is designed to transform your space and elevate your mood.</p>
+        <a routerLink="/products" class="btn">Shop Luxury Collection</a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Candle Care Guide Section -->
+  <section class="care-guide-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Candle Care Guide</h2>
+        <p>Get the most from your luxury candles with our expert care tips</p>
+      </div>
+      
+      <div class="material-details">
+        <div class="material-info">
+          <div class="material-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6M10 22h4M8 9h8M12 9v9M13 9a5 5 0 0 0-2-4 5 5 0 0 0-2 4M11 9a5 5 0 0 1 2-4 5 5 0 0 1 2 4"/>
+            </svg>
+          </div>
+          <h3>Premium Materials</h3>
+          <p>Our candles are crafted from 100% natural soy wax, sourced from sustainable American farms. Soy wax burns cleaner with no toxic releases, is biodegradable, and has a longer burn time than paraffin.</p>
+        </div>
+        
+        <div class="material-info">
+          <div class="material-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12h1M6 12h1M9 12h1M14 12h1M18 12h1M21 12h1M12 2v1M12 6v1M12 9v1M12 14v1M12 18v1M12 21v1"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+          </div>
+          <h3>Signature Scents</h3>
+          <p>We use premium fragrance oils infused with essential oils for our signature scents. Popular collections include "Amber & Sandalwood," "Vanilla Bean & Cedarwood," "Sea Salt & Orchid," and our seasonal "Pumpkin Spice & Clove."</p>
+        </div>
+
+        <div class="material-info">
+          <div class="material-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2c.8.6 1.7 1.2 2.1 2.1.4 1 .4 2.2 0 3.2-.4.9-1.3 1.5-2.1 2.1-.8-.6-1.7-1.2-2.1-2.1-.4-1-.4-2.2 0-3.2.4-.9 1.3-1.5 2.1-2.1zM12 9v3M12 22v-4M7 8l-.7.7M17 8l.7.7M12 18a4 4 0 0 1-4-4 4 4 0 0 1 4-4z"/>
+            </svg>
+          </div>
+          <h3>Cotton Wicks</h3>
+          <p>We use lead-free cotton wicks that are specially braided for a clean, even burn. Our wicks are carefully selected based on jar size and wax type to ensure optimal scent throw and minimal soot.</p>
+        </div>
+      </div>
+      
+      <div class="care-process">
+        <div class="care-tip-card">
+          <div class="tip-icon">
+            <!-- First Burn Icon - Candle with flame -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2c.8.6 1.7 1.2 2.1 2.1.4 1 .4 2.2 0 3.2-.4.9-1.3 1.5-2.1 2.1-.8-.6-1.7-1.2-2.1-2.1-.4-1-.4-2.2 0-3.2.4-.9 1.3-1.5 2.1-2.1z"/>
+              <path d="M12 17v-5"/>
+              <path d="M7 21h10"/>
+              <path d="M9 21v-1.5C9 18.1 8.1 17 7.5 17S6 18.1 6 19.5v.5"/>
+              <path d="M15 21v-1.5c0-1.4.9-2.5 1.5-2.5s1.5 1.1 1.5 2.5v.5"/>
+              <path d="M12 11a5 5 0 0 1-5 5h10a5 5 0 0 1-5-5z"/>
+            </svg>
+          </div>
+          <div class="tip-number">01</div>
+          <h3>First Burn</h3>
+          <p>Allow your candle to burn until the entire top layer of wax has melted, usually 2-3 hours. This prevents tunneling and ensures even burning for the life of your candle.</p>
+          <div class="process-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="care-tip-card">
+          <div class="tip-icon">
+            <!-- Trim the Wick Icon - Scissors cutting a wick -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 4 8.5 15.5"/>
+              <path d="M6 8.5 4 10l2 1.5L8.5 10 6 8.5z"/>
+              <path d="M8.5 10 6 11.5 8 13l2.5-1.5L8.5 10z"/>
+              <path d="M12 16V8"/>
+              <path d="M12 21v-5"/>
+              <circle cx="12" cy="3" r="1"/>
+            </svg>
+          </div>
+          <div class="tip-number">02</div>
+          <h3>Trim the Wick</h3>
+          <p>Before each burn, trim your wick to 1/4 inch. This prevents excessive smoke, extends burn time, and maintains a clean, even burn.</p>
+          <div class="process-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="care-tip-card">
+          <div class="tip-icon">
+            <!-- Avoid Drafts Icon - Candle with wind protection -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12h5"/>
+              <path d="M3 9h4"/>
+              <path d="M3 15h4"/>
+              <path d="M17 12h5"/>
+              <path d="M17 9h4"/>
+              <path d="M17 15h4"/>
+              <path d="M12 2c.8.6 1.5 1.2 2 2 .5 1 .5 2 0 3-.5.8-1.2 1.4-2 2-.8-.6-1.5-1.2-2-2-.5-1-.5-2 0-3 .5-.8 1.2-1.4 2-2z"/>
+              <path d="M12 16v-5"/>
+              <path d="M9 21h6"/>
+              <path d="M10 21v-1"/>
+              <path d="M14 21v-1"/>
+            </svg>
+          </div>
+          <div class="tip-number">03</div>
+          <h3>Avoid Drafts</h3>
+          <p>Keep your candle away from drafts, vents, or air currents. These can cause uneven burning, sooting, or excessive wax consumption.</p>
+          <div class="process-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="care-tip-card">
+          <div class="tip-icon">
+            <!-- Burn Time Icon - Candle with timer/clock -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="8"/>
+              <path d="M12 8v4l2 2"/>
+              <path d="M12 2c.8.6 1.5 1.2 2 2 .5 1 .5 2 0 3-.5.8-1.2 1.4-2 2"/>
+              <path d="M12 2c-.8.6-1.5 1.2-2 2-.5 1-.5 2 0 3 .5.8 1.2 1.4 2 2"/>
+            </svg>
+          </div>
+          <div class="tip-number">04</div>
+          <h3>Burn Time</h3>
+          <p>Don't burn your candle for more than 4 hours at a time. Allow it to cool before relighting to maintain the integrity of the vessel and the fragrance.</p>
+        </div>
+      </div>
+      
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>What Our Customers Say</h2>
+      </div>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="quote">The scents are absolutely divine, and the packaging is beautiful! These candles have become a daily ritual in my home.</p>
+          <div class="author">
+            <div class="author-image">
+              <img src="assets/images/2.png" alt="Emma Johnson">
+            </div>
+            <div class="author-info">
+              <h4>Emma Johnson</h4>
+              <div class="stars">★★★★★</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <p class="quote">I've tried many candle brands, but none compare to the quality and scent throw of these. They burn so evenly too!</p>
+          <div class="author">
+            <div class="author-image">
+              <img src="assets/images/3.png" alt="Michael Chen">
+            </div>
+            <div class="author-info">
+              <h4>Michael Chen</h4>
+              <div class="stars">★★★★★</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <p class="quote">These candles make perfect gifts. The elegant design and amazing fragrance always impress my friends and family.</p>
+          <div class="author">
+            <div class="author-image">
+              <img src="assets/images/4.png" alt="Sarah Williams">
+            </div>
+            <div class="author-info">
+              <h4>Sarah Williams</h4>
+              <div class="stars">★★★★★</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Seasonal Collection Highlight -->
+  <section class="seasonal-collection">
+    <div class="container">
+      <div class="seasonal-content">
+        <span class="label">Limited Edition</span>
+        <h2>Autumn Ambiance Collection</h2>
+        <p>Embrace the season with our limited-edition autumn scents. Featuring warm spices, golden amber, and hints of harvest fruits that transform your space into a cozy autumn retreat.</p>
+        <a routerLink="/products" class="btn">Explore the Collection</a>
+      </div>
+      <div class="seasonal-image">
+        <img src="assets/images/3.png" alt="Autumn Ambiance Collection">
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+    <div class="decorative-circle circle-3"></div>
+    <div class="container">
+      <div class="cta-content">
+        <h2>Join Our Candle Community</h2>
+        <p>Subscribe to our newsletter for exclusive offers, new arrivals, and candle care tips to enhance your sensory experience.</p>
+        
+        <form class="cta-form" (ngSubmit)="submitSubscription()">
+          <input 
+            type="email" 
+            [(ngModel)]="emailSubscription" 
+            name="email" 
+            placeholder="Your email address" 
+            required
+            aria-label="Email for newsletter">
+          <button type="submit">Subscribe</button>
+        </form>
+        
+        <div *ngIf="showSubscribeMessage" class="subscribe-message" [class.error]="subscribeMessage.includes('valid')">
+          {{ subscribeMessage }}
+        </div>
+        
+        <div class="social-proof">
+          <div class="social-stat">
+            <span class="number">10k+</span>
+            <span class="label">Happy Customers</span>
+          </div>
+          <div class="social-stat">
+            <span class="number">50+</span>
+            <span class="label">Unique Scents</span>
+          </div>
+          <div class="social-stat">
+            <span class="number">100%</span>
+            <span class="label">Natural Ingredients</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

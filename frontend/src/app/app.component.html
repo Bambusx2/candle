@@ -1,0 +1,20 @@
+<div class="app-container">
+  <app-header></app-header>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+  <app-footer></app-footer>
+
+  <!-- Scroll to top button -->
+  <button 
+    class="scroll-to-top-btn" 
+    [class.visible]="isScrolled" 
+    (click)="scrollToTop()" 
+    aria-label="Scroll to top"
+    title="Scroll to top">
+    &#9650;
+  </button>
+
+  <!-- Notifications -->
+  <app-notification></app-notification>
+</div>

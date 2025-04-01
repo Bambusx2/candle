@@ -1,0 +1,359 @@
+<div class="products-page">
+  <!-- Modern Hero Section with 2025 Design Elements - Simplified -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Shop Our Collection</h1>
+      <p>Discover our handcrafted candles, made with premium ingredients and designed to transform your space</p>
+    </div>
+  </section>
+  
+  <!-- Product Display Section -->
+  <section class="products-section">
+    <div class="container">
+      <div class="products-container">
+        <!-- Mobile filter toggle button -->
+        <button *ngIf="isMobile" class="filter-toggle-btn" (click)="toggleFilters()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
+        </button>
+        
+        <!-- Filters sidebar with enhanced mobile experience -->
+        <div class="filters-container" [ngClass]="{'active': showFilters}">
+          <div class="filters">
+            <button *ngIf="isMobile" class="close-filters" (click)="toggleFilters()">×</button>
+            
+            <!-- Search box -->
+            <div class="filter-section">
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search
+              </h3>
+              <div class="search-input-container">
+                <input 
+                  type="text" 
+                  [(ngModel)]="searchQuery" 
+                  (input)="updateSearch()"
+                  placeholder="Search candles..."
+                  class="search-input"
+                  aria-label="Search candles"
+                >
+                <button 
+                  *ngIf="searchQuery" 
+                  class="clear-search" 
+                  (click)="searchQuery = ''; updateSearch();"
+                  aria-label="Clear search">
+                  ×
+                </button>
+              </div>
+            </div>
+            
+            <!-- Categories filter section -->
+            <div class="filter-section">
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Categories
+              </h3>
+              <div class="categories-list">
+                <div class="category-item" *ngFor="let category of categories">
+                  <div class="radio-container">
+                    <input 
+                      type="radio" 
+                      [id]="'category-' + category.id" 
+                      name="category" 
+                      [value]="category.id" 
+                      [checked]="selectedCategoryId === category.id" 
+                      (change)="onCategoryChange(category.id)">
+                    <label [for]="'category-' + category.id" class="category-label">
+                      {{ category.name }}
+                      <span class="category-count" *ngIf="getCategoryCount(category.id) > 0">{{ getCategoryCount(category.id) }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Price range filter with modern design -->
+            <div class="filter-section price-range-section">
+              <div class="price-range-header">
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  Price Range
+                </h3>
+                <div class="price-display">${{minPriceFilter}} - ${{maxPriceFilter}}</div>
+              </div>
+              
+              <!-- Improved dual handle price slider -->
+              <div class="dual-slider-container">
+                <!-- Main slider track -->
+                <div class="slider-track"></div>
+                
+                <!-- Colored range between handles -->
+                <div class="slider-range" 
+                     [style.left]="((minPriceFilter - minPrice) / (maxPrice - minPrice)) * 100 + '%'"
+                     [style.width]="((maxPriceFilter - minPriceFilter) / (maxPrice - minPrice)) * 100 + '%'">
+                </div>
+                
+                <!-- Min price handle with improved interactions -->
+                <div class="slider-handle min-handle" 
+                     id="min-price-handle"
+                     [style.left]="((minPriceFilter - minPrice) / (maxPrice - minPrice)) * 100 + '%'"
+                     (mousedown)="startDragging($event, 'min')"
+                     (touchstart)="startDragging($event, 'min')">
+                  <div class="current-value">${{minPriceFilter}}</div>
+                </div>
+                
+                <!-- Max price handle with improved interactions -->
+                <div class="slider-handle max-handle" 
+                     id="max-price-handle"
+                     [style.left]="((maxPriceFilter - minPrice) / (maxPrice - minPrice)) * 100 + '%'"
+                     (mousedown)="startDragging($event, 'max')"
+                     (touchstart)="startDragging($event, 'max')">
+                  <div class="current-value">${{maxPriceFilter}}</div>
+                </div>
+                
+                <!-- Price input controls -->
+                <div class="price-inputs">
+                  <div class="min-price-input">
+                    <label for="min-price">Min</label>
+                    <input 
+                      type="number" 
+                      id="min-price" 
+                      [min]="minPrice" 
+                      [max]="maxPrice" 
+                      [(ngModel)]="minPriceFilter" 
+                      (change)="onMinPriceChange($event)"
+                      aria-label="Minimum price">
+                  </div>
+                  <div class="price-separator">-</div>
+                  <div class="max-price-input">
+                    <label for="max-price">Max</label>
+                    <input 
+                      type="number" 
+                      id="max-price" 
+                      [min]="minPrice" 
+                      [max]="maxPrice" 
+                      [(ngModel)]="maxPriceFilter" 
+                      (change)="onMaxPriceChange($event)"
+                      aria-label="Maximum price">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Product Grid -->
+        <div class="products-content">
+          <!-- Products header with enhanced accessibility -->
+          <div class="products-header">
+            <div class="header-container">
+              <h1 id="product-heading">
+                <ng-container *ngIf="selectedCategoryId !== null && categories.length > 0">
+                  {{ getSelectedCategoryName() }} 
+                </ng-container>
+                <ng-container *ngIf="selectedCategoryId === null">
+                  All Candles
+                </ng-container>
+                <span class="product-count" aria-live="polite">{{ filteredProducts.length }} Products</span>
+              </h1>
+              <div class="actions">
+                <button 
+                  *ngIf="isFiltersApplied()" 
+                  class="clear-filters-btn" 
+                  (click)="clearFilters()"
+                  aria-label="Clear all filters and reset to default view"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                  </svg>
+                  CLEAR ALL FILTERS
+                </button>
+                <div class="sort-container">
+                  <label for="sort" id="sort-label">Sort by:</label>
+                  <select 
+                    id="sort" 
+                    (change)="onSortChange($event)" 
+                    [value]="sortOption"
+                    aria-labelledby="sort-label"
+                  >
+                    <option value="id,asc">Recommended</option>
+                    <option value="price,asc">Price: Low to High</option>
+                    <option value="price,desc">Price: High to Low</option>
+                    <option value="rating,desc">Highest Rated</option>
+                    <option value="createdAt,desc">Newest</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Skeleton loaders for product cards while loading -->
+          <div *ngIf="isLoading" class="product-grid skeleton-grid">
+            <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="skeleton-card">
+              <div class="skeleton-img"></div>
+              <div class="skeleton-content">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-category"></div>
+                <div class="skeleton-price"></div>
+                <div class="skeleton-button"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Product grid with actual products when loaded -->
+          <div *ngIf="!isLoading && filteredProducts.length > 0" class="product-grid">
+            <app-product-card 
+              *ngFor="let product of filteredProducts; let i = index" 
+              [product]="product" 
+              (addedToCart)="addToCart($event)"
+              [attr.style]="'--card-index: ' + i"
+            ></app-product-card>
+          </div>
+          
+          <!-- No products message -->
+          <div *ngIf="!isLoading && filteredProducts.length === 0 && !error" class="no-products">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <h2>No products found</h2>
+            <p>Try adjusting your filters or search criteria</p>
+          </div>
+          
+          <!-- Error message -->
+          <div *ngIf="error" class="error-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2>Something went wrong</h2>
+            <p>{{ error }}</p>
+            <button class="primary-btn" (click)="loadProducts()">Try Again</button>
+          </div>
+          
+          <!-- Pagination -->
+          <div *ngIf="!isLoading && totalPages > 1" class="pagination">
+            <button 
+              [disabled]="currentPage === 0" 
+              (click)="goToPage(currentPage - 1)"
+              class="page-btn prev"
+              [class.disabled]="currentPage === 0"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            
+            <div class="page-numbers">
+              <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+                <button 
+                  *ngIf="i === 0 || i === totalPages - 1 || (i >= currentPage - 1 && i <= currentPage + 1) || i === currentPage"
+                  class="page-number"
+                  [class.active]="i === currentPage"
+                  (click)="goToPage(i)"
+                >
+                  {{ i + 1 }}
+                </button>
+                <span *ngIf="i === 1 && currentPage > 2" class="page-ellipsis">...</span>
+                <span *ngIf="i === totalPages - 2 && currentPage < totalPages - 3" class="page-ellipsis">...</span>
+              </ng-container>
+            </div>
+            
+            <button 
+              [disabled]="currentPage === totalPages - 1" 
+              (click)="goToPage(currentPage + 1)"
+              class="page-btn next"
+              [class.disabled]="currentPage === totalPages - 1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Meta information for SEO and user education -->
+  <section class="product-meta-section" *ngIf="!isLoading && filteredProducts.length > 0">
+    <div class="container">
+      <div class="product-meta-info">
+        <h2>Our Premium Candle Collection</h2>
+        <div class="meta-columns">
+          <div class="meta-column">
+            <h3>Handcrafted Quality</h3>
+            <p>Our candles are meticulously handcrafted with premium soy wax and natural essential oils, ensuring a cleaner burn and superior scent throw. Each candle is carefully poured and inspected to meet our high quality standards.</p>
+          </div>
+          <div class="meta-column">
+            <h3>Long-Lasting Fragrances</h3>
+            <p>With burn times ranging from 30 to 80 hours depending on the size, our candles are designed to fill your space with delightful fragrances for longer. The carefully balanced scent composition ensures the fragrance remains consistent from first light to last flicker.</p>
+          </div>
+          <div class="meta-column">
+            <h3>Eco-Friendly & Sustainable</h3>
+            <p>We're committed to sustainability, using renewable soy wax, cotton wicks, and recyclable packaging. Our manufacturing process is designed to minimize waste and environmental impact while maximizing the quality of each candle.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Add structured data for SEO -->
+<script type="application/ld+json" *ngIf="!isLoading && filteredProducts.length > 0">
+  {
+    "@context": "https://schema.org/",
+    "@type": "ItemList",
+    "itemListElement": [
+      <ng-container *ngFor="let product of filteredProducts; let i = index">
+        {
+          "@type": "ListItem",
+          "position": {{ i + 1 }},
+          "item": {
+            "@type": "Product",
+            "name": "{{ product.name }}",
+            "description": "{{ product.description }}",
+            "image": "{{ product.imageUrl }}",
+            "offers": {
+              "@type": "Offer",
+              "price": {{ product.price }},
+              "priceCurrency": "USD",
+              "availability": "{{ product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}"
+            }
+            <ng-container *ngIf="product.rating">
+            ,
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": {{ product.rating }},
+              "reviewCount": {{ product.reviewCount || 0 }}
+            }
+            </ng-container>
+          }
+        }<ng-container *ngIf="i < filteredProducts.length - 1">,</ng-container>
+      </ng-container>
+    ]
+  }
+</script>
